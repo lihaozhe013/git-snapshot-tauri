@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
+import logo from "./assets/logo.svg";
 
 function App() {
   const [gitInstalled, setGitInstalled] = useState<boolean | null>(null);
@@ -58,8 +59,15 @@ function App() {
   if (gitInstalled === null) {
     return (
       <div className="container">
+        <div className="logo-container">
+          <img src={logo} alt="Git Snapshot Logo" className="app-logo" />
+        </div>
         <h1>Git Snapshot</h1>
-        <p>Checking git installation...</p>
+        <div className="content-area">
+          <div className="status-box">
+            <p>Checking git installation...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -67,11 +75,16 @@ function App() {
   if (!gitInstalled) {
     return (
       <div className="container">
+        <div className="logo-container">
+          <img src={logo} alt="Git Snapshot Logo" className="app-logo" />
+        </div>
         <h1>Git Snapshot</h1>
-        <div className="error-box">
-          <h2>Error</h2>
-          <p>Git is not installed on your system.</p>
-          <p>Please install Git before using this tool.</p>
+        <div className="content-area">
+          <div className="error-box">
+            <h2>Git Not Installed</h2>
+            <p>Git is not installed on your system or not in your PATH.</p>
+            <p>Please install Git before using this tool.</p>
+          </div>
         </div>
       </div>
     );
@@ -79,44 +92,63 @@ function App() {
 
   return (
     <div className="container">
+      <div className="logo-container">
+        <img src={logo} alt="Git Snapshot Logo" className="app-logo" />
+      </div>
       <h1>Git Snapshot</h1>
       
-      <div className="status-box">
-        <h2>Repository Status</h2>
-        {inRepo ? (
-          <p>Working with git repository in the current directory.</p>
-        ) : (
-          <p>Current directory is not a git repository.</p>
-        )}
-      </div>
-
-      <div className="action-box">
-        <h2>Actions</h2>
-        {!inRepo ? (
-          <button 
-            onClick={handleInit} 
-            disabled={loading}
-            className="action-button"
-          >
-            {loading ? "Initializing..." : "Initialize Repository"}
-          </button>
-        ) : (
-          <button 
-            onClick={handleCommit} 
-            disabled={loading}
-            className="action-button"
-          >
-            {loading ? "Committing..." : "Commit Snapshot"}
-          </button>
-        )}
-      </div>
-
-      {message && (
-        <div className="message-box">
-          <h2>Message</h2>
-          <p>{message}</p>
+      <div className="content-area">
+        <div className="status-box">
+          <h2>Repository Status</h2>
+          {inRepo ? (
+            <p>Working with git repository in the current directory.</p>
+          ) : (
+            <p>Current directory is not a git repository.</p>
+          )}
         </div>
-      )}
+
+        <div className="action-box">
+          <h2>One-Tap Git Solution</h2>
+          {!inRepo ? (
+            <button 
+              onClick={handleInit} 
+              disabled={loading}
+              className="action-button"
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Initializing...
+                </>
+              ) : (
+                "Initialize Repository"
+              )}
+            </button>
+          ) : (
+            <button 
+              onClick={handleCommit} 
+              disabled={loading}
+              className="action-button"
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Committing...
+                </>
+              ) : (
+                "Commit Snapshot"
+              )}
+            </button>
+          )}
+        </div>
+
+        {message && (
+          <div className="message-box">
+            <h2>Status</h2>
+            <p>{message}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
