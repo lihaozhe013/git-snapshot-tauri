@@ -5,8 +5,8 @@ import App from './App.tsx'
 
 // Create root element with specific size
 const rootElement = document.getElementById('root')!;
-rootElement.style.width = '600px';
-rootElement.style.height = '600px';
+rootElement.style.width = '800px';
+rootElement.style.height = '800px';
 
 createRoot(rootElement).render(
   <StrictMode>
