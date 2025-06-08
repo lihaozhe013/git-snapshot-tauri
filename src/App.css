@@ -144,3 +144,10 @@ p {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}

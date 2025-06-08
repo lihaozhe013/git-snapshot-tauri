@@ -8,6 +8,7 @@ function App() {
   const [inRepo, setInRepo] = useState<boolean | null>(null);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [action, setAction] = useState<string>("");
 
   useEffect(() => {
     checkGitStatus();
@@ -29,6 +30,7 @@ function App() {
 
   const handleInit = async () => {
     setLoading(true);
+    setAction("initializing");
     setMessage("Initializing repository...");
     
     try {
@@ -39,11 +41,13 @@ function App() {
       setMessage("Error: " + e.toString());
     } finally {
       setLoading(false);
+      setAction("");
     }
   };
 
   const handleCommit = async () => {
     setLoading(true);
+    setAction("committing");
     setMessage("Committing changes...");
     
     try {
@@ -53,6 +57,23 @@ function App() {
       setMessage("Error: " + e.toString());
     } finally {
       setLoading(false);
+      setAction("");
+    }
+  };
+
+  const handleSync = async () => {
+    setLoading(true);
+    setAction("syncing");
+    setMessage("Syncing repository...");
+    
+    try {
+      const result = await invoke<string>("sync_repository");
+      setMessage(result);
+    } catch (e: any) {
+      setMessage("Error: " + e.toString());
+    } finally {
+      setLoading(false);
+      setAction("");
     }
   };
 
@@ -115,7 +136,7 @@ function App() {
               disabled={loading}
               className="action-button"
             >
-              {loading ? (
+              {action === "initializing" ? (
                 <>
                   <span className="loading-spinner"></span>
                   Initializing...
@@ -125,20 +146,36 @@ function App() {
               )}
             </button>
           ) : (
-            <button 
-              onClick={handleCommit} 
-              disabled={loading}
-              className="action-button"
-            >
-              {loading ? (
-                <>
-                  <span className="loading-spinner"></span>
-                  Committing...
-                </>
-              ) : (
-                "Commit Snapshot"
-              )}
-            </button>
+            <div className="button-group">
+              <button 
+                onClick={handleCommit} 
+                disabled={loading}
+                className="action-button"
+              >
+                {action === "committing" ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    Committing...
+                  </>
+                ) : (
+                  "Commit Snapshot"
+                )}
+              </button>
+              <button 
+                onClick={handleSync} 
+                disabled={loading}
+                className="action-button"
+              >
+                {action === "syncing" ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    Syncing...
+                  </>
+                ) : (
+                  "Sync Repository"
+                )}
+              </button>
+            </div>
           )}
         </div>
 

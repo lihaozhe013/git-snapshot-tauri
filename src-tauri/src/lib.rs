@@ -150,6 +150,43 @@ pub fn run() {
     format!("Changes committed successfully by {}", user)
   }
 
+  // Sync repository (pull and push)
+  #[command]
+  fn sync_repository() -> String {
+    // Check if remote is set
+    let remote_check = Command::new("git")
+        .args(&["remote", "-v"])
+        .output();
+    
+    if let Ok(output) = remote_check {
+        if output.stdout.is_empty() {
+            return "No remote repository configured. Please set up a remote repository with 'git remote add origin <repository-url>'".to_string();
+        }
+    } else {
+        return "Failed to check remote repository status".to_string();
+    }
+
+    // Pull with rebase
+    let pull_result = Command::new("git")
+        .args(&["pull", "-r"])
+        .status();
+    
+    if let Err(e) = pull_result {
+        return format!("Failed to pull changes: {}", e);
+    }
+
+    // Push changes
+    let push_result = Command::new("git")
+        .args(&["push"])
+        .status();
+    
+    if let Err(e) = push_result {
+        return format!("Failed to push changes: {}", e);
+    }
+
+    "Repository successfully synced".to_string()
+  }
+
   tauri::Builder::default()
     .setup(|app| {
       if cfg!(debug_assertions) {
@@ -165,7 +202,8 @@ pub fn run() {
         check_git_installed,
         has_git_repo,
         init_repo,
-        commit_changes
+        commit_changes,
+        sync_repository
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
