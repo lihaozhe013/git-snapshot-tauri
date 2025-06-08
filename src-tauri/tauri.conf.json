@@ -13,9 +13,9 @@
     "windows": [
       {
         "title": "Git Snapshot",
-        "width": 800,
-        "height": 800,
-        "resizable": true,
+        "width": 600,
+        "height": 600,
+        "resizable": false,
         "fullscreen": false
       }
     ],

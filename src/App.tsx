@@ -4,27 +4,21 @@ import "./App.css";
 import logo from "./assets/logo.svg";
 
 function App() {
-  const [gitInstalled, setGitInstalled] = useState<boolean | null>(null);
   const [inRepo, setInRepo] = useState<boolean | null>(null);
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [action, setAction] = useState<string>("");
 
   useEffect(() => {
-    checkGitStatus();
+    checkRepoStatus();
   }, []);
 
-  const checkGitStatus = async () => {
+  const checkRepoStatus = async () => {
     try {
-      const installed = await invoke<boolean>("check_git_installed");
-      setGitInstalled(installed);
-      
-      if (installed) {
-        const repo = await invoke<boolean>("has_git_repo");
-        setInRepo(repo);
-      }
+      const repo = await invoke<boolean>("has_git_repo");
+      setInRepo(repo);
     } catch (e: any) {
-      setMessage("Error checking git status: " + e.toString());
+      setMessage("Error checking repository status: " + e.toString());
     }
   };
 
@@ -77,7 +71,7 @@ function App() {
     }
   };
 
-  if (gitInstalled === null) {
+  if (inRepo === null) {
     return (
       <div className="container">
         <div className="logo-container">
@@ -86,25 +80,7 @@ function App() {
         <h1>Git Snapshot</h1>
         <div className="content-area">
           <div className="status-box">
-            <p>Checking git installation...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!gitInstalled) {
-    return (
-      <div className="container">
-        <div className="logo-container">
-          <img src={logo} alt="Git Snapshot Logo" className="app-logo" />
-        </div>
-        <h1>Git Snapshot</h1>
-        <div className="content-area">
-          <div className="error-box">
-            <h2>Git Not Installed</h2>
-            <p>Git is not installed on your system or not in your PATH.</p>
-            <p>Please install Git before using this tool.</p>
+            <p>Checking repository status...</p>
           </div>
         </div>
       </div>

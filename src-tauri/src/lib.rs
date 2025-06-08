@@ -12,16 +12,6 @@ pub fn run() {
   #[cfg(not(windows))]
   const USER_ENV: &str = "USER";
 
-  // Check if git is installed
-  #[command]
-  fn check_git_installed() -> bool {
-    Command::new("git")
-        .arg("--version")
-        .status()
-        .map(|status| status.success())
-        .unwrap_or(false)
-  }
-
   // Check if current directory has a git repository
   #[command]
   fn has_git_repo() -> bool {
@@ -41,19 +31,9 @@ pub fn run() {
     }
 
     // Write .gitignore
-    let gitignore_result = fs::write(".gitignore", "log/\n.DS_Store\nnul\n");
+    let gitignore_result = fs::write(".gitignore", ".DS_Store\n");
     if gitignore_result.is_err() {
         return "Failed to create .gitignore file".to_string();
-    }
-
-    // Create log directory
-    #[cfg(windows)]
-    let mkdir_result = Command::new("cmd").args(&["/C", "mkdir", "log"]).status();
-    #[cfg(not(windows))]
-    let mkdir_result = Command::new("mkdir").arg("-p").arg("log").status();
-    
-    if mkdir_result.is_err() {
-        return "Failed to create log directory".to_string();
     }
 
     // Initial commit
@@ -136,17 +116,6 @@ pub fn run() {
         return "Failed to commit changes".to_string();
     }
 
-    // Write to log file
-    let logfile = format!("log/{}.log", timestamp);
-    let log_result = File::create(&logfile)
-        .and_then(|mut file| {
-            writeln!(file, "Commit by {} at {}", user, timestamp)
-        });
-    
-    if log_result.is_err() {
-        return format!("Changes committed successfully by {}, but failed to write log", user);
-    }
-
     format!("Changes committed successfully by {}", user)
   }
 
@@ -199,7 +168,6 @@ pub fn run() {
       Ok(())
     })
     .invoke_handler(tauri::generate_handler![
-        check_git_installed,
         has_git_repo,
         init_repo,
         commit_changes,
